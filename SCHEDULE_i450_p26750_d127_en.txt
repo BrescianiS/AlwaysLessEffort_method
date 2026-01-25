@@ -1,0 +1,46 @@
+Entered values:
+  initial desired Increment: 45%;  number of Phases: 267.5;  number of Days: 13 (12.7).
+
+
+
+You can consider for convenience the values of phases per day either in approximated form or in precise form.
+For both of them the total resulted coherent with the requested number of phases (267.5)
+Once chosen, it is suggested to always follow the values of the same column.
+
+
+Confirmation of increment of first day compared to the last day:
+24.4/16.8 = 1.45 --> +45% .
+
+
+
+
+ SCHEDULE
+
+
+Day	 Phases per day 	 (approx)
+
+1	24.4 		 (24.5)
+2	23.7 		 (23.5)
+3	23.1 		 (23)
+4	22.5 		 (22.5)
+5	21.8 		 (22)
+6	21.2 		 (21)
+7	20.6 		 (20.5)
+8	19.9 		 (20)
+9	19.3 		 (19.5)
+10	18.7 		 (18.5)
+11	18.1 		 (18)
+12	17.4 		 (17.5)
+13	16.8 		 (17)
+
+
+
+Have a good work!
+
+
+
+
+
+
+Powered by Always-Less-Effort method
+(https://github.com/BrescianiS/AlwaysLessEffort_method)

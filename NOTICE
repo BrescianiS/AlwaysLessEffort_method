@@ -1,0 +1,10 @@
+Always-Less-Effort method
+
+Method and relative algorithm to obtain a schedule of workload
+in a descending linear way with user-defined parameters to set the rate between the work at the begin and at the end of the process.
+This method allows to conserve the constraint of performing all the work into the pre-established days together with imposing a personal increase of the initial work with respect to the final work.
+Algorithms, use cases, output example and mathematical formulations are provided.
+
+Copyright 2026 Samuel Bresciani bresciani.app@gmail.com . All rights reserved.
+
+This product includes software developed by Samuel Bresciani.
