@@ -74,7 +74,15 @@ public:
         , sensApproxPhases { sensApproxPhases_in }
         , maxErrIter { maxErrIter_in }
     {
-        this->AlgorithmElaboration();
+        if( (nd > 1) || (rp > 1.0f)  ){
+            double check_q =  2*np/nd;
+            double check_m = 2*np/(nd * (nd-1));
+            if( ( abs(check_q) < 1e20 ) && ( abs(check_m) < 1e20 )  ){
+                this->AlgorithmElaboration();
+            }
+        }else{
+            ErrorOrWarning = "ERROR";
+        }
     }
 
 
@@ -89,18 +97,18 @@ private:
 
     void AlgorithmElaboration() {
         // Manage non integer number of days
-        const int int_part_nd = static_cast< int >( this->nd );
+        const int int_part_nd = static_cast< float >(static_cast< int >( this->nd ));
         // In case of nd as non-integer number
         if (this->nd > int_part_nd) {
             int N;
-            this->dec_part_last_day = (this->nd - int_part_nd);
+            this->dec_part_last_day = static_cast< float >(this->nd - int_part_nd);
             // If the rational part is less or equal than 0.5 it will be considered as half day
             if (this->dec_part_last_day <= 0.5) {
-                N = 2 * int_part_nd + 1;
+                N = 2 * static_cast< int >(int_part_nd) + 1;
                 this->d.reserve(N);
                 this->pd.reserve(N);
                 this->pdap.reserve(N);
-                this->approxDays = N / 2.0f;
+                this->approxDays = static_cast< float >(N) / 2.0f;
                 this->ParametersComputation(N);
             }
             // If the rational part is greater or equal than 0.5 one day more will be considered hence it will be elaborated as an entire day
@@ -116,10 +124,10 @@ private:
         // In case nd as an integer number
         else {
             this->approxDays = this->nd;
-            this->d.reserve(int_part_nd);
-            this->pd.reserve(int_part_nd);
-            this->pdap.reserve(int_part_nd);
-            this->ParametersComputation(int_part_nd);
+            this->d.reserve(static_cast< int >(int_part_nd));
+            this->pd.reserve(static_cast< int >(int_part_nd));
+            this->pdap.reserve(static_cast< int >(int_part_nd));
+            this->ParametersComputation(static_cast< int >(int_part_nd));
         }
     }
 
@@ -130,8 +138,8 @@ private:
     void ParametersComputation(int N) {
 
         // q and m parameters definition
-        this->q = this->np * 2.0f * this->rp / ( N *  (this->rp + 1.0f) );
-        this->m = this->q * (this->rp - 1.0f) / (this->rp * ( N - 1) );
+        this->q = this->np * 2.0f * this->rp / ( static_cast<float>(N) *  (this->rp + 1.0f) );
+        this->m = this->q * (this->rp - 1.0f) / (this->rp * static_cast<float>(N - 1) );
         // Algorithm results computation
         this->ResultsComputation(N);
 
@@ -140,45 +148,48 @@ private:
         while( ( (ErrorOrWarning == "ERROR") || (this->wrong_rate ) ) && (counter < this->maxErrIter) ){
             // Rescale m to P and adjust q
             this->m = this->m * (this->np / this->totExactPhases);
-            this->q = (this->np  + this->m *(N*(N-1)/2.0f) )/N;
-            float R_check = this->q / (this->q - this->m*(N-1));
-            // if the correction drifts the R value from desired one more than 2 * sensRate the correction is stopped
-            if( ( (R_check <= (this->rp - 2*this->sensRate)) || (R_check >= (this->rp + 2*this->sensRate)) || (this->q < this->m*(N-1)) ) ){
-                counter = this->maxErrIter;
-            }else{
-                this->d.clear();
-                this->pd.clear();
-                this->pdap.clear();
-                this->ErrorOrWarning = " ";
-                this->ResultsComputation(N);
-                counter++;
+            this->q = (this->np + this->m * (static_cast<float>(N * (N - 1)) / 2.0f)) / static_cast<float>(N);
+            if (this->q != (this->m * static_cast<float>(N - 1))) {
+                float R_check = this->q / (this->q - this->m * static_cast<float>(N - 1));
+                // if the correction drifts the R value from desired one more than 2 * sensRate the correction is stopped
+                if (((R_check <= (this->rp - 2 * this->sensRate)) ||
+                     (R_check >= (this->rp + 2 * this->sensRate)) ||
+                     (this->q < this->m * static_cast<float>(N - 1)))) {
+                    counter = 10;
+                } else {
+                    this->d.clear();
+                    this->pd.clear();
+                    this->pdap.clear();
+                    this->ErrorOrWarning = " ";
+                    this->ResultsComputation(N);
+                    counter++;
+                }
+            } else {
+                counter = 10;
             }
         }
-
 
     }
 
 
     // Results computation function
     void ResultsComputation(int N) {
-        int i,c;
-        float A,r;
         // Only the first computation outside the for cycle, avoiding to check if i==0 every iteration
-        A = this->q;
-        c = static_cast< int >( A );
-        r = A - 1.0f * c;
+        float each_day_value = this->q;
+        float c = static_cast<float>(static_cast< int >( each_day_value ));
+        float r = each_day_value - 1.0f * c;
         r  = (r < 0.25) ? 0.0f : ((r >= 0.25) && (r < 0.75)) ? 0.5f : 1.0f ;
         this->d.push_back(1);
-        this->pd.push_back( A );
+        this->pd.push_back( each_day_value );
         this->pdap.push_back( (c + r) );
         // other iterations
-        for (i = 1; i < N; i++) {
-            A =  A - this->m;
-            c = static_cast< int >( A );
-            r = A - 1.0f * c;
+        for (int i = 1; i < N; i++) {
+            each_day_value -= this->m;
+            c = static_cast<float>(static_cast< int >( each_day_value ));
+            r = each_day_value - 1.0f * c;
             r  = (r < 0.25) ? 0.0f : ((r >= 0.25) && (r < 0.75)) ? 0.5f : 1.0f ;
             this->d.push_back( i + 1 );
-            this->pd.push_back( A );
+            this->pd.push_back( each_day_value );
             this->pdap.push_back( (c + r) );
         }
 

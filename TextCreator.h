@@ -65,7 +65,7 @@ private:
     // function to set output values approximation
     void outputApproximation(){
 
-        for (int i = 0; i < d.size() ; i++) {
+        for (int i = 0; i < static_cast<int>(d.size()) ; i++) {
             this->pd.at(i) = roundf( this->pd.at(i) / this->outExact ) * this->outExact ;
             this->pdap.at(i) = roundf( this->pdap.at(i) / this->outApprox ) * this->outApprox ;
         }
@@ -86,7 +86,7 @@ private:
             outD << setprecision(3) << this->approxDays << " (" << setprecision(4) << this->nd << ")";
         }
         file << "Entered values: \n  "
-                "initial desired Increment: "<< ((this->rp -1.0f) *100.0f) << "%;  "<<
+                "initial desired Increment: +"<< ((this->rp -1.0f) *100.0f) << "%;  "<<
                 "number of Phases: " << this->np << ";  number of Days: " << outD.str() <<". \n\n\n\n";
 
         this->english_infofile(file);
@@ -112,7 +112,7 @@ private:
             outD << setprecision(3) << this->approxDays << " (" << setprecision(4) << this->nd << ")";
         }
         file << "Valori inseriti: \n  "
-                 "Incremento iniziale richiesto: " << ((this->rp - 1.0f) * 100.0f) << "%;  "<<
+                 "Incremento iniziale richiesto: +" << ((this->rp - 1.0f) * 100.0f) << "%;  "<<
                  "numero di Fasi: " << this->np << ";  numero di Giorni: " << outD.str() <<". \n\n\n\n";
 
         this->italian_infofile(file);
@@ -192,8 +192,8 @@ private:
         // In case of non integer nd
         else {
             float phs_d, phs_d_ap;
-            for (int i = 0; i < this->d.size(); i++) {
-                if (i == this->d.size() - 1) {
+            for (int i = 0; i < static_cast<int>(this->d.size()); i++) {
+                if (i == (static_cast<int>(this->d.size()) - 1)) {
                     file << this->approxDays << "\t \t"
                          << this->pd.at(i) << "\t\t (" << this->pdap.at(i) << ")\t\t\t "
                          << this->pd.at(i) << "\t\t\t (" << this->pdap.at(i) << ")\n\n";

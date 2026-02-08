@@ -1,5 +1,5 @@
 Entered values:
-  initial desired Increment: 45%;  number of Phases: 267.5;  number of Days: 13 (12.7).
+  initial desired Increment: +45%;  number of Phases: 267.5;  number of Days: 13 (12.7).
 
 
 
