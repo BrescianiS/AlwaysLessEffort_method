@@ -21,7 +21,7 @@
 /***************************************************************
  *
  * INPUT NECESSARY VARIABLES: nd, np, rp
- * INPUT SECONDARY VARIABLES FOR ALGORITHM CUSTOMIZATION: sensRate, sensExactPhases, sensApproxPhases, maxErrIter
+ * INPUT SECONDARY VARIABLES FOR ALGORITHM CUSTOMIZATION: sensRate, sensExactPhases, sensSingleApproxPhase, sensTotApproxPhases, maxErrIter
  *
  * OUTPUT VARIABLES: (related to class object itself) all computed values and eventual relative error or warning
  *
@@ -34,6 +34,7 @@
 
 #include <vector>
 #include <numeric>
+#include <cmath>
 #include <string>
 
 using namespace std;
@@ -48,9 +49,11 @@ public:
 
 private:
     // Desired sensibility for the rate of work, exact number of phases and approximated number of phases
-    const float sensRate, sensExactPhases, sensApproxPhases;
+    const float sensRate, sensExactPhases, sensApproxSinglePhase, sensApproxTotPhases;
     // Maximum number of times that the correction iterations for the error happens
     const int maxErrIter;
+    // computational limit
+    const float compLimit = 1e20f;
 
 public:
     float rate_first_last, totApproxPhases, totExactPhases;
@@ -58,12 +61,12 @@ public:
     vector<float> pd, pdap;
     float approxDays;
     // to distinguish the two cases of nd as integer or not
-    float dec_part_last_day = 10;
+    bool onlyIntegerDays = true;
     bool wrong_rate = false;
     string ErrorOrWarning = " ";
 
 
-    AlwaysLessEffort(float nDays_in, float nPhases_in, float desiredRate_in, float sensRate_in = 0.0001f , float sensExactPhases_in = 0.01f, float sensApproxPhases_in = 0.15f , int maxErrIter_in = 2)
+    AlwaysLessEffort(float nDays_in, float nPhases_in, float desiredRate_in, float sensRate_in = 0.0001f , float sensExactPhases_in = 0.01f, float sensApproxSinglePhase_in = 0.01f, float sensApproxTotPhases_in = 0.1f , int maxErrIter_in = 2)
         //be careful of declaration variables order
         : nd { nDays_in }
         , np { nPhases_in }
@@ -71,13 +74,14 @@ public:
         , rp { (desiredRate_in + 100.0f)/100.0f }
         , sensRate { sensRate_in }
         , sensExactPhases { sensExactPhases_in }
-        , sensApproxPhases { sensApproxPhases_in }
+        , sensApproxSinglePhase { sensApproxSinglePhase_in }
+        , sensApproxTotPhases { sensApproxTotPhases_in }
         , maxErrIter { maxErrIter_in }
     {
-        if( (nd > 1) || (rp > 1.0f)  ){
+        if( (nd > 1) && (nd < compLimit)  &&  (rp > 1.0f) && (rp < compLimit)  &&  (np > 1) && (np < compLimit) ){
             double check_q =  2*np/nd;
-            double check_m = 2*np/(nd * (nd-1));
-            if( ( abs(check_q) < 1e20 ) && ( abs(check_m) < 1e20 )  ){
+            double check_m = 2*np/(nd * (nd-1.0f));
+            if( ( check_q < compLimit ) && ( check_m < compLimit )  ){
                 this->AlgorithmElaboration();
             }
         }else{
@@ -91,39 +95,31 @@ private:
 
     float m, q;
 
-    // eventual number of parts of integer to compute the approximated number of phases
-    //int approxDiv = 2;
+
+    // Rounding function to half-integer number
+    float roundHalfDayNg(float nToRound) {
+        if( nToRound <= 1.0f )  return 1.0f;
+        return roundf(nToRound *2.0f) /2.0f;
+    }
 
 
     void AlgorithmElaboration() {
         // Manage non integer number of days
         const int int_part_nd = static_cast< float >(static_cast< int >( this->nd ));
+        this->approxDays = this->roundHalfDayNg(this->nd);
+        
         // In case of nd as non-integer number
-        if (this->nd > int_part_nd) {
+        if ( (this->nd - int_part_nd) > 0.1f ) {
             int N;
-            this->dec_part_last_day = static_cast< float >(this->nd - int_part_nd);
-            // If the rational part is less or equal than 0.5 it will be considered as half day
-            if (this->dec_part_last_day <= 0.5) {
-                N = 2 * static_cast< int >(int_part_nd) + 1;
-                this->d.reserve(N);
-                this->pd.reserve(N);
-                this->pdap.reserve(N);
-                this->approxDays = static_cast< float >(N) / 2.0f;
-                this->ParametersComputation(N);
-            }
-            // If the rational part is greater or equal than 0.5 one day more will be considered hence it will be elaborated as an entire day
-            else {
-                N = 2 * int_part_nd + 2;
-                this->d.reserve(N / 2);
-                this->pd.reserve(N / 2);
-                this->pdap.reserve(N / 2);
-                this->approxDays = N / 2.0f;
-                this->ParametersComputation(N / 2);
-            }
+            this->onlyIntegerDays = false;
+            N = 2 * static_cast< int >(int_part_nd) + 1;
+            this->d.reserve(N);
+            this->pd.reserve(N);
+            this->pdap.reserve(N);
+            this->ParametersComputation(N);
         }
         // In case nd as an integer number
         else {
-            this->approxDays = this->nd;
             this->d.reserve(static_cast< int >(int_part_nd));
             this->pd.reserve(static_cast< int >(int_part_nd));
             this->pdap.reserve(static_cast< int >(int_part_nd));
@@ -174,23 +170,13 @@ private:
 
     // Results computation function
     void ResultsComputation(int N) {
-        // Only the first computation outside the for cycle, avoiding to check if i==0 every iteration
-        float each_day_value = this->q;
-        float c = static_cast<float>(static_cast< int >( each_day_value ));
-        float r = each_day_value - 1.0f * c;
-        r  = (r < 0.25) ? 0.0f : ((r >= 0.25) && (r < 0.75)) ? 0.5f : 1.0f ;
-        this->d.push_back(1);
-        this->pd.push_back( each_day_value );
-        this->pdap.push_back( (c + r) );
-        // other iterations
-        for (int i = 1; i < N; i++) {
-            each_day_value -= this->m;
-            c = static_cast<float>(static_cast< int >( each_day_value ));
-            r = each_day_value - 1.0f * c;
-            r  = (r < 0.25) ? 0.0f : ((r >= 0.25) && (r < 0.75)) ? 0.5f : 1.0f ;
+        float each_day_value;
+        // iterations
+        for (int i = 0; i < N; i++) {
+            each_day_value = this->q - static_cast<float>(i)* this->m;
             this->d.push_back( i + 1 );
             this->pd.push_back( each_day_value );
-            this->pdap.push_back( (c + r) );
+            this->pdap.push_back( roundf(each_day_value / sensApproxSinglePhase) * sensApproxSinglePhase);
         }
 
         // Final checks of computed values near enough to desired values
@@ -201,7 +187,7 @@ private:
         } else {
             // approximated phases
             this->totApproxPhases = accumulate(this->pdap.begin(), this->pdap.end(), 0.0f);
-            if ((this->totApproxPhases <= (this->np - this->sensApproxPhases)) || (this->totApproxPhases >= (this->np + this->sensApproxPhases))) {
+            if ((this->totApproxPhases <= (this->np - this->sensApproxTotPhases)) || (this->totApproxPhases >= (this->np + this->sensApproxTotPhases))) {
                 this->ErrorOrWarning = "WARNING";
             }
         }

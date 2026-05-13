@@ -54,12 +54,12 @@ private:
     const vector<int> d;
     vector<float> pd, pdap;
     const float approxDays;
-    const float dec_part_last_day;
+    const bool onlyIntegerDays;
     float rate_first_last, totApproxPhases, totExactPhases;
     const string ErrorOrWarning;
     const string lang;
     // Output value approximation for the rate, the exact number of phases and approximated number of phases
-    const float outRate, outExact, outApprox;
+    const float outRate, outExact, outSingleApprox, outTotApprox;
 
 
     // function to set output values approximation
@@ -67,11 +67,11 @@ private:
 
         for (int i = 0; i < static_cast<int>(d.size()) ; i++) {
             this->pd.at(i) = roundf( this->pd.at(i) / this->outExact ) * this->outExact ;
-            this->pdap.at(i) = roundf( this->pdap.at(i) / this->outApprox ) * this->outApprox ;
+            this->pdap.at(i) = roundf( this->pdap.at(i) / this->outSingleApprox ) * this->outSingleApprox ;
         }
         this->totExactPhases = roundf( this->totExactPhases / this->outExact ) * this->outExact ;
         // it handles also the particular error case with totApproxPhases about 0
-        this->totApproxPhases = ( this->totApproxPhases < this->outApprox ) ? this->outApprox : roundf(this->totApproxPhases/ this->outApprox) * this->outApprox ;
+        this->totApproxPhases = ( this->totApproxPhases < this->outTotApprox ) ? this->outTotApprox : roundf(this->totApproxPhases/ this->outTotApprox) * this->outTotApprox ;
         this->rate_first_last = roundf( this->rate_first_last / this->outRate ) * this->outRate;
     }
 
@@ -95,7 +95,7 @@ private:
         file << "\n\n SCHEDULE\n\n\n";
 
         // In case of integer nd
-        if (this->dec_part_last_day > 0.5) {
+        if (this->onlyIntegerDays) {
             file << "Day\t Phases per day \t (approx)  \n\n";
         }
         // In case of non integer nd
@@ -120,7 +120,7 @@ private:
         file << "\n\n PIANIFICAZIONE\n\n\n";
 
         // In case of integer nd
-        if (this->dec_part_last_day > 0.5) {
+        if (this->onlyIntegerDays) {
             file << "Giorno\t Fasi al giorno \t (appross)  \n\n";
         }
         // In case of non integer nd
@@ -183,7 +183,7 @@ private:
         }
 
         // In case of integer nd
-        if (this->dec_part_last_day > 0.5) {
+        if (this->onlyIntegerDays) {
             for (int i = 0; i < d.size(); i++) {
                 file << this->d.at(i) << "\t" << this->pd.at(i) << " \t\t ("
                      << this->pdap.at(i) << ") \n";
@@ -228,7 +228,7 @@ public:
 
     string TextToWriteInFile;
 
-    TextCreator( AlwaysLessEffort ALE, string language = "en", float outRate_in = 0.001f, float outExact_in = 0.1f, float outApprox_in = 0.1f )
+    TextCreator( AlwaysLessEffort ALE, string language = "en", float outRate_in = 0.001f, float outExact_in = 0.01f, float outSingleApprox_in = 0.01f, float outTotApprox_in = 0.1f )
         //be careful of declaration variables order
         : nd { ALE.nd }
         , np { ALE.np }
@@ -237,7 +237,7 @@ public:
         , pd { ALE.pd }
         , pdap { ALE.pdap }
         , approxDays { ALE.approxDays }
-        , dec_part_last_day { ALE.dec_part_last_day }
+        , onlyIntegerDays { ALE.onlyIntegerDays }
         , rate_first_last { ALE.rate_first_last }
         , totApproxPhases { ALE.totApproxPhases }
         , totExactPhases { ALE.totExactPhases }        
@@ -245,7 +245,8 @@ public:
         , lang { std::move(language) }
         , outRate { outRate_in }
         , outExact { outExact_in }
-        , outApprox { outApprox_in }
+        , outSingleApprox { outSingleApprox_in }
+        , outTotApprox { outTotApprox_in }
     {
         this->outputApproximation();
         this->ContentWriter();

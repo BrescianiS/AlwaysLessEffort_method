@@ -10,20 +10,20 @@ It often happens that a job requires a progressive obtainment of results, that a
 It can happen due to the final scope of the job or due to the nature itself of the process, full of check or review phases, each time more complex, 
 that usually brings to a situation in which the work to handle on last days, close to the deadline, results really harder compared to the work of first days.
 
-The scope of the Always-Less-Effort method is to organize the daily work in a user-controlled decreasing way, instead of a constant scheduling, through a personalised parameter 
+The scope of the Always-Less-Effort method is to organise the daily work in a user-controlled decreasing way, instead of a constant scheduling, through a personalised parameter 
 which permits to accumulate more work on first days and less on last days close to deadline, 
 in order to reach the end of the process having more available time to manage the overall results of previous days and eventual unforeseen obstacles.
 
 In terms of computational speed, an important advantage in using this method is that the parameters are computed just once with a single iteration, thanks to an analytical solution,
-and they are note deduced with an iterative process, as instead other algorithms could do. This is possible thanks to the exact solution of trend parameters, as illustrated in the section [How to use](https://github.com/BrescianiS/AlwaysLessEffort?tab=readme-ov-file#how-to-use)
-and mathematically explained in the section [Analytical solution demonstration](https://github.com/BrescianiS/AlwaysLessEffort?tab=readme-ov-file#analytical-solution-demonstration).
+and they are not deduced with an iterative process, as instead other algorithms could do. This is possible thanks to the exact solution of trend parameters, as illustrated in the section [How to use](https://github.com/BrescianiS/AlwaysLessEffort_method?tab=readme-ov-file#how-to-use)
+and mathematically explained in the section [Analytical solution demonstration](https://github.com/BrescianiS/AlwaysLessEffort_method?tab=readme-ov-file#analytical-solution-demonstration).
 
 
 ## Generic example
 We can suppose to have an hypothetical building process of a final product, that requires some check phases in the middle of the overall process (to be sure of
 results obtained till that moment) or maybe a comprehensive final phase, and we want to avoid an effort accumulation close to the deadline or manage the best possible the situation in case some quality check failed and hence some past phase has to be repeated.
 
-Hence supposing to have an overall of 200 phases for the building process and a deadline of 10 days to realise the product, if we considered a constant daily work we would have a schedule of about 20 process phases per day
+Hence, supposing to have an overall of 200 phases for the building process and a deadline of 10 days to realise the product, if we considered a constant daily work we would have a schedule of about 20 process phases per day
 
 | Day | Daily work phases  |
 |:----|:------------------:|
@@ -42,9 +42,9 @@ Hence supposing to have an overall of 200 phases for the building process and a 
 
 Using instead the Always-Less-Effort method, setting the input parameter of rate as **50** ( which means 50% more of work on first day compared to the last day ) and of course **10** available days parameter and **200** generic processes as overall workload,
 we can obtain a decreasing daily work schedule that considers all the 200 phases in 10 days but takes also into account our desired initial increment of work expressed through the rate of work between last day and first one.  
-The optimal value of this rate can be deduced thanks to the the personal experience on how much we think last phases of a process could be harder than first phases,
+The optimal value of this rate can be deduced thanks to the personal experience on how much we think last phases of a process could be harder than first phases,
 or simply as an attempt to have more time during last days to easier handle the overall production process and relative checks or reviews.  
-(for an illustration of algorithm usage look at [how to use](https://github.com/BrescianiS/AlwaysLessEffort?tab=readme-ov-file#how-to-use) section)
+(for an illustration of algorithm usage look at [how to use](https://github.com/BrescianiS/AlwaysLessEffort_method?tab=readme-ov-file#how-to-use) section)
 
 | Day | Daily work phases  |    Approximated value of daily work phases    |
 |:----|:------------------:|:---------------------------------------------:|
@@ -79,10 +79,11 @@ which leads necessary to accumulate working complexity to days close to deadline
 - in didactic context, for a better organisation of study material, this method can be useful for a student that can consider the total number of pages to study for preparing an exam as the equivalent of the workload mentioned above (e.g. 200 pages instead of 200 work phases);
 in general to prepare an exam if you take into account a certain number of pages studied during first days (e.g.: 10 first pages of study material to prepare an exam) these are really easier than the same number of pages studied during last days (10 last pages of study material) 
 because the study concepts are often based on progressive knowledge acquired by studying day by day; 
-therefore, if the student considers just a constant study schedule of 10 pages a day, the study process could results much harder during last days. 
+therefore, if the student considers just a constant study schedule of 10 pages a day, the study process could result much harder during last days. 
 With a decreasing controlled method instead the student can organise the study schedule for having less pages to study during last days, thanks to a parameter chosen by the student in function of subject complexity, 
 avoiding that the ending accumulation of study material brings to a stressful situation, leading instead to the final exam with a more rested mind.
-That's how this method was born and has been applied efficiently during Bachelor and Master Degree studies. For this usage it exists an **app** downloadable from PlayStore for free (release ongoing).
+That's how this method was born and has been applied efficiently during Bachelor and Master Degree studies.
+For this usage it exists an **Android app** ( [StudySprint](https://play.google.com/store/apps/details?id=com.studysprint.app) close to the official release ), downloadable from PlayStore for free, that also helps the student with an updating schedule feature in case of falling behind in the study deadlines.
 
 You have to consider that in every situation the reduction of work ( or study ) on last days implies inevitably the increasing of first days work ( or study ) for the obvious necessity to achieve the total workload ( or study ) material; 
 and this aspect can be managed thanks to the designated parameter of the rate between the work ( or study ) on first day with compared to the last day. 
@@ -99,13 +100,13 @@ The input parameters of the algorithm are:
 - **nDays** as number of available days before the deadline
 - **desiredRate** the desired work increase, in terms of percentage, of first day compared to the last day.
 
-(the underlying mathematical logic is illustrated in the section [main parameters of the algorithm one-iteration solution](https://github.com/BrescianiS/AlwaysLessEffort#main-parameters-of-the-algorithm-one-iteration-solution))  
+(the underlying mathematical logic is illustrated in the section [main parameters of the algorithm one-iteration solution](https://github.com/BrescianiS/AlwaysLessEffort_method#main-parameters-of-the-algorithm-one-iteration-solution))  
 Decimal number of days can be entered too (e.g. 12.3); in this case the algorithm will organise the computation, and the output text too, managing all in terms of half days.  
-The optimal value of rate parameter _desiredRate_ can be deduced as illustrated in the [generic example](), in function of the experience on how harder could be the last phases compared to first ones.
+The optimal value of rate parameter _desiredRate_ can be deduced as illustrated in the [generic example](https://github.com/BrescianiS/AlwaysLessEffort_method#generic-example), in function of the experience on how harder could be the last phases compared to first ones.
 
 Additional input parameters can be set for the precision of the algorithm in checking how much the computed values are near to analytical solution and for output text values writing approximation too.
 These out-of-precision cases are really rare situations but their self-correction has been considered for completeness
-(their functionality is illustrated in [self-correction procedure](https://github.com/BrescianiS/AlwaysLessEffort#self-correction-procedure) section).
+(their functionality is illustrated in [self-correction procedure](https://github.com/BrescianiS/AlwaysLessEffort_method#self-correction-procedure) section).
 
 The repository consists of two libraries:
 - **_AlwaysLessEffort_** that elaborates the actual algorithm on which the method is based
@@ -120,15 +121,15 @@ An example of the final text file as result of the overall elaboration is report
 ## Analytical logic
 
 ### Main parameters of the algorithm one-iteration solution
-An important advantage of this method, in terms of computational speed, is that its parameters are computed in an analytical exact way in one single computation and they are not obtained with more converging iterations as some algorithms do. 
-This is possible thanks to an analytical solution of the problem, as demonstrated in [formulas demonstrations](https://github.com/BrescianiS/AlwaysLessEffort?tab=readme-ov-file#analytical-solution-demonstration) section, that had led to the parameters illustrated in this section.
+An important advantage of this method, in terms of computational speed, is that its parameters are computed in an analytical exact way in one single computation, and they are not obtained with more converging iterations as some algorithms do. 
+This is possible thanks to an analytical solution of the problem, as demonstrated in [formulas demonstrations](https://github.com/BrescianiS/AlwaysLessEffort_method?tab=readme-ov-file#analytical-solution-demonstration) section, that had led to the parameters illustrated in this section.
 
 The workload daily distribution is computed as follows:
 
 calling $R$ the previously introduced rate between the 'quantity' of work to perform on first day and on the last day,  
 a distribution of daily work (here in terms of work phases) can be defined as $p(d) = q - m d$,  
-where $p(d)$ is the number of work phases to be performed on the day $d$, with $m$ and $q$ two parameters positively defined, analytically computed in function of total available days $N$ (as 10 days in the [generic example](https://github.com/BrescianiS/AlwaysLessEffort?tab=readme-ov-file#generic-example))
-and the overall work to be completed $P$ (as 200 total work phases in the [generic example](https://github.com/BrescianiS/AlwaysLessEffort?tab=readme-ov-file#generic-example)).
+where $p(d)$ is the number of work phases to be performed on the day $d$, with $m$ and $q$ two parameters positively defined, analytically computed in function of total available days $N$ (as 10 days in the [generic example](https://github.com/BrescianiS/AlwaysLessEffort_method?tab=readme-ov-file#generic-example))
+and the overall work to be completed $P$ (as 200 total work phases in the [generic example](https://github.com/BrescianiS/AlwaysLessEffort_method?tab=readme-ov-file#generic-example)).
 
 The two main algorithm parameters are
 
@@ -140,7 +141,7 @@ Hence, once computed _q_ and _m_ in function of the input parameters (_P_, _N_ a
 Please take into account that the number of days goes from 0 up to to _N-1_.  
 Alternatively we can start computing the number of phases of first day ( $p(0)$ ) that is exactly $q$, then all values of number of phases to be carried out on following days can be easily obtained in function of previous day value as $p(d) = p(d-1) - m$. 
 
-The origins of these formulas and relative mathematical demonstrations are all illustrated in [formulas demonstrations](https://github.com/BrescianiS/AlwaysLessEffort?tab=readme-ov-file#analytical-solution-demonstration).
+The origins of these formulas and relative mathematical demonstrations are all illustrated in [formulas demonstrations](https://github.com/BrescianiS/AlwaysLessEffort_method?tab=readme-ov-file#analytical-solution-demonstration).
 
 
 ### Self-correction procedure
@@ -173,7 +174,7 @@ $= N q - m \sum_{d=1}^{N-1} d = N q - m \frac{N (N-1)}{2} $
 The rate $R$ between the work on first day and last day can be computed as  
 $R = \frac{p(0)}{p(N-1)} = \frac{q}{ q - m(N-1)}$ , with _R_ > 1 for the scope itself of the algorithm.
 
-Therefore two equations have been obtained to relate $P$, $R$ and $N$ to $m$ and $q$:
+Therefore, two equations have been obtained to relate $P$, $R$ and $N$ to $m$ and $q$:
 
 $P = N q - m \frac{N (N-1)}{2} $  
 $R = \frac{q}{ q - m(N-1)}$
@@ -196,5 +197,5 @@ $R = c /( -a (N-1)^2 - b (N-1) + c) $
 but an additional relation is necessary to find $a$, $b$ and $c$.  
 Maybe it could work for more degrees too but other practical considerations have to be applied for specific cases.
 
-On the same way if it was used an iterative converging process the schedule could be computed with almost all non uniform trends,
-but it would obviously looses the computational benefit of an analytically exact formula that does not require converging iterations and obtains the precise solution as indeed this method does. 
+On the same way if it was used an iterative converging process the schedule could be computed with almost all non-uniform trends,
+but it would obviously loose the computational benefit of an analytically exact formula that does not require converging iterations and obtains the precise solution as indeed this method does. 

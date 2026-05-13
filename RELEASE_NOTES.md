@@ -17,10 +17,18 @@ Copyright 2026 Samuel Bresciani bresciani.app@gmail.com
 ### Features
 - algorithm limits crash handling
 - C++ data type cast handling
-- 
+
+## Version 1.1
+**Release Date:** 2026-05-13
+
+### Features
+- improved algorithm limits crash handling
+- more managable half-days logics
+- StudySprint app description insertion with open-tests link
+
 
 ### Future implementations
-- Link of Android app based on this method
+- Link of StudySprint app officially released
 - Python version scripts
 
 
