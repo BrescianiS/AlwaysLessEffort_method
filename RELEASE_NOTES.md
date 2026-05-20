@@ -2,14 +2,22 @@
 
 Copyright 2026 Samuel Bresciani bresciani.app@gmail.com
 
-## Version 1.0.0
-**Release Date:** 2026-02
+
+## Version 1.1.1
+**Release Date:** 2026-05-20
 
 ### Features
-- README manual with logics explanations
-- C++ library to run the algorithm AlwaysLessEffort.h
-- C++ library to generate an output string TextCreator.h
-- C++ main script to generate an output text file through other two libraries
+- official site StudySprint app inserted in README
+
+
+## Version 1.1
+**Release Date:** 2026-05-13
+
+### Features
+- algorithm limits crash handling improved
+- more managable half-days logics
+- StudySprint app description insertion with open-tests link
+
 
 ## Version 1.0.1
 **Release Date:** 2026-02-08
@@ -18,13 +26,15 @@ Copyright 2026 Samuel Bresciani bresciani.app@gmail.com
 - algorithm limits crash handling
 - C++ data type cast handling
 
-## Version 1.1
-**Release Date:** 2026-05-13
+
+## Version 1.0.0
+**Release Date:** 2026-02
 
 ### Features
-- improved algorithm limits crash handling
-- more managable half-days logics
-- StudySprint app description insertion with open-tests link
+- README manual with logics explanations
+- C++ library to run the algorithm AlwaysLessEffort.h
+- C++ library to generate an output string TextCreator.h
+- C++ main script to generate an output text file through other two libraries
 
 
 ### Future implementations
