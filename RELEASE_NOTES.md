@@ -3,11 +3,19 @@
 Copyright 2026 Samuel Bresciani bresciani.app@gmail.com
 
 
+## Version 1.2
+**Release Date:** 2026-05-21
+
+### Features
+- StudySprint app info inserted in README after official release on Play Store
+- StudySprint app preview image inserted
+
+
 ## Version 1.1.1
 **Release Date:** 2026-05-20
 
 ### Features
-- official site StudySprint app inserted in README
+- official site StudySprint app linked in README
 
 
 ## Version 1.1

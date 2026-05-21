@@ -5,7 +5,7 @@ in a descending linear way with user-defined parameters to set the rate between 
 This method allows to conserve the constraint of performing all the work into the pre-established days together with imposing a personal increase of the initial work with respect to the final work.
 Algorithms, use cases, output example and mathematical formulations are provided.
 
-Related app based on this algorithm is introduced ( https://getstudysprint.com/ ).
+Related app, named StudySprint, based on this algorithm is introduced ( https://getstudysprint.com/ ).
 
 Copyright 2026 Samuel Bresciani bresciani.app@gmail.com . All rights reserved.
 

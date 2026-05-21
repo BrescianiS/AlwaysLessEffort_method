@@ -82,8 +82,8 @@ because the study concepts are often based on progressive knowledge acquired by 
 therefore, if the student considers just a constant study schedule of 10 pages a day, the study process could result much harder during last days. 
 With a decreasing controlled method instead the student can organise the study schedule for having less pages to study during last days, thanks to a parameter chosen by the student in function of subject complexity, 
 avoiding that the ending accumulation of study material brings to a stressful situation, leading instead to the final exam with a more rested mind.
-That's how this method was born and has been applied efficiently during Bachelor and Master Degree studies.
-For this usage it exists an **Android app** ( [StudySprint](https://getstudysprint.com/) close to the official release ), downloadable from PlayStore for free, that also helps the student with an updating schedule feature in case of falling behind in the study deadlines.
+That's how this method was born and has been applied efficiently during Bachelor and Master Degree studies.  
+For this application, there is a free and lightweight **app** named [StudySprint](https://getstudysprint.com/), officially available on the Play Store. It supports students with additional features, such as allowing them to update their schedules if they fall behind on academic deadlines.
 
 You have to consider that in every situation the reduction of work ( or study ) on last days implies inevitably the increasing of first days work ( or study ) for the obvious necessity to achieve the total workload ( or study ) material; 
 and this aspect can be managed thanks to the designated parameter of the rate between the work ( or study ) on first day with compared to the last day. 
