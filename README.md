@@ -1,6 +1,5 @@
 # Always-Less-Effort
-Method that allows you to compute a schedule to achieve your goal with less effort every day.  
-User-defined parameters allow you to set the ratio between the first-day and the last-day workloads while still retaining the goal of completing the overall workload.
+Always Less Effort (ALE) is a scheduling algorithm that distributes a fixed workload before a given deadline so that each day requires less work than the previous one, while still guaranteeing completion of the total workload. The ratio between the first-day and last-day workloads is user-defined, and the daily workload distribution is obtained in a single computation through a closed-form analytical solution.
 
 Copyright 2026 Samuel Bresciani bresciani.app@gmail.com
 

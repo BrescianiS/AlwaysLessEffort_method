@@ -2,12 +2,19 @@
 
 Copyright 2026 Samuel Bresciani bresciani.app@gmail.com
 
+## Version 1.2.2
+**Release Date:** 2026-06-09
+
+### Features
+- Improve documentation introduction
+
 ## Version 1.2.1
 **Release Date:** 2026-06-05
 
 ### Features
 - Improve README documentation
 - Update README with mobile application details
+
 
 ## Version 1.2
 **Release Date:** 2026-05-21
@@ -52,7 +59,6 @@ Copyright 2026 Samuel Bresciani bresciani.app@gmail.com
 
 
 ### Future implementations
-- Link of StudySprint app officially released
 - Python version scripts
 
 
