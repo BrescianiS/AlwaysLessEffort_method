@@ -2,6 +2,12 @@
 
 Copyright 2026 Samuel Bresciani bresciani.app@gmail.com
 
+## Version 1.2.3
+**Release Date:** 2026-06-24
+
+### Features
+- Fix days approximation
+
 ## Version 1.2.2
 **Release Date:** 2026-06-09
 

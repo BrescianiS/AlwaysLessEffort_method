@@ -104,29 +104,28 @@ private:
 
 
     void AlgorithmElaboration() {
-        // Manage non integer number of days
-        const int int_part_nd = static_cast< float >(static_cast< int >( this->nd ));
         this->approxDays = this->roundHalfDayNg(this->nd);
-        
+        // Manage non integer number of days
+        const int int_part_apprDays = static_cast< float >(static_cast< int >( this->approxDays ));
+
         // In case of nd as non-integer number
-        if ( (this->nd - int_part_nd) > 0.1f ) {
+        if ( (this->approxDays - int_part_apprDays) > 0.1f ) {
             int N;
             this->onlyIntegerDays = false;
-            N = 2 * static_cast< int >(int_part_nd) + 1;
+            N = 2 * static_cast< int >(int_part_apprDays) + 1;
             this->d.reserve(N);
             this->pd.reserve(N);
             this->pdap.reserve(N);
             this->ParametersComputation(N);
         }
-        // In case nd as an integer number
+            // In case nd as an integer number
         else {
-            this->d.reserve(static_cast< int >(int_part_nd));
-            this->pd.reserve(static_cast< int >(int_part_nd));
-            this->pdap.reserve(static_cast< int >(int_part_nd));
-            this->ParametersComputation(static_cast< int >(int_part_nd));
+            this->d.reserve(static_cast< int >(this->approxDays));
+            this->pd.reserve(static_cast< int >(this->approxDays));
+            this->pdap.reserve(static_cast< int >(this->approxDays));
+            this->ParametersComputation(static_cast< int >(this->approxDays));
         }
     }
-
 
     // FUNCTIONS TO COMPUTE THE ALGORITHM RESULTS
 
