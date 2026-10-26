@@ -21,9 +21,9 @@
 /***************************************************************
  *
  * INPUT NECESSARY VARIABLES: nd, np, rp
- * INPUT SECONDARY VARIABLES FOR ALGORITHM CUSTOMIZATION: sensRate, sensExactPhases, sensSingleApproxPhase, sensTotApproxPhases, maxErrIter
+ * INPUT SECONDARY VARIABLES FOR ALGORITHM CUSTOMIZATION: AleTolerances (sensRate, sensExactPhases, sensApproxSinglePhase, sensApproxTotPhases, maxErrIter)
  *
- * OUTPUT VARIABLES: (related to class object itself) all computed values and eventual relative error or warning
+ * OUTPUT VARIABLES: (related to class object itself) all computed values and  eventual relative error or warning
  *
  **************************************************************/
 
@@ -32,189 +32,186 @@
 #ifndef ALWAYSLESSEFFORT_H
 #define ALWAYSLESSEFFORT_H
 
-#include <vector>
-#include <numeric>
 #include <cmath>
-#include <string>
+#include <cstddef>
+#include <numeric>
+#include <string_view>
+#include <vector>
 
-using namespace std;
+
+// Secondary parameters of the algorithm, with their default values.
+// Defined at namespace scope (not nested) so it can be used as default argument
+// of the AlwaysLessEffort constructor.
+struct AleTolerances 
+{
+    // Desired sensibility for the rate of work
+    float sensRate = 0.0001f;
+    // Desired sensibility for the exact number of phases
+    float sensExactPhases = 0.01f;
+    // Rounding step of the approximated phases of a single day
+    float sensApproxSinglePhase = 0.01f;
+    // Desired sensibility for the approximated total number of phases
+    float sensApproxTotPhases = 0.1f;
+    // Maximum number of times that the correction iterations for the error happens
+    int maxErrIter = 2;
+};
 
 
-class AlwaysLessEffort
+class AlwaysLessEffort 
 {
 
 public:
-    // input variables Days, Phases and Increase percentage/Rate
+    // input variables Days, Phases and Increase Percentage/Rate
     const float nd, np, rp;
-
-private:
-    // Desired sensibility for the rate of work, exact number of phases and approximated number of phases
-    const float sensRate, sensExactPhases, sensApproxSinglePhase, sensApproxTotPhases;
-    // Maximum number of times that the correction iterations for the error happens
-    const int maxErrIter;
-    // computational limit
-    const float compLimit = 1e20f;
-
-public:
-    float rate_first_last, totApproxPhases, totExactPhases;
-    vector<int> d;
-    vector<float> pd, pdap;
-    float approxDays;
+    // other computation variables
+    float rate_first_last = 0.0f;
+    float totApproxPhases = 0.0f;
+    float totExactPhases = 0.0f;
+    float approxDays = 0.0f;
+    std::vector<int> d;
+    std::vector<float> pd, pdap;
     // to distinguish the two cases of nd as integer or not
     bool onlyIntegerDays = true;
     bool wrong_rate = false;
-    string ErrorOrWarning = " ";
+    // generic ok-error-warning status     
+    enum class Status { Ok, Warning, Error };
+    Status status = Status::Ok;
 
 
-    AlwaysLessEffort(float nDays_in, float nPhases_in, float desiredRate_in, float sensRate_in = 0.0001f , float sensExactPhases_in = 0.01f, float sensApproxSinglePhase_in = 0.01f, float sensApproxTotPhases_in = 0.1f , int maxErrIter_in = 2)
-        //be careful of declaration variables order
+    AlwaysLessEffort(float nDays_in, float nPhases_in, float desiredRate_in, AleTolerances tolerances = {})
+        // initialization order must follow the declaration order (nd, np, rp, tol)
         : nd { nDays_in }
         , np { nPhases_in }
-        //here the percentage is converted in actual rate for the computation
-        , rp { (desiredRate_in + 100.0f)/100.0f }
-        , sensRate { sensRate_in }
-        , sensExactPhases { sensExactPhases_in }
-        , sensApproxSinglePhase { sensApproxSinglePhase_in }
-        , sensApproxTotPhases { sensApproxTotPhases_in }
-        , maxErrIter { maxErrIter_in }
+        // here the percentage is converted in actual rate for the computation
+        , rp { (desiredRate_in + 100.0f) / 100.0f }
+        , tol { tolerances }
     {
-        if( (nd > 1) && (nd < compLimit)  &&  (rp > 1.0f) && (rp < compLimit)  &&  (np > 1) && (np < compLimit) ){
-            double check_q =  2*np/nd;
-            double check_m = 2*np/(nd * (nd-1.0f));
-            if( ( check_q < compLimit ) && ( check_m < compLimit )  ){
-                this->AlgorithmElaboration();
-            }
-        }else{
-            ErrorOrWarning = "ERROR";
+        if( !( (nd >= 1.25f) && (nd <= maxDays) && (rp > 1.0f) && (rp < compLimit) && (np > 1.0f) && (np < compLimit) && (tol.sensApproxSinglePhase > 0.0f) ) ){
+            status = Status::Error;
+            return;
         }
+        const double check_q = 2.0 * np / nd;
+        const double check_m = 2.0 * np / (static_cast<double>(nd) * (static_cast<double>(nd) - 1.0));
+        if ((check_q >= compLimit) || (check_m >= compLimit)) {
+            status = Status::Error;
+            return;
+        }
+        // all conditions of existance satisfied
+        algorithmElaboration();
     }
 
+    // Text version of the status: " " (ok), "WARNING" or "ERROR"
+    [[nodiscard]] std::string_view statusText() const noexcept 
+    {
+        switch (status) {
+            case Status::Warning: return "WARNING";
+            case Status::Error:   return "ERROR";
+            default:              return " ";
+        }
+    }
 
 
 private:
 
-    float m, q;
+    float m = 0.0f, q = 0.0f;
+    // computational limit
+    static constexpr float compLimit = 1e20f;
+    // maximum number of days: N vectors elements are allocated and N is stored in an int
+    static constexpr float maxDays = 1e6f;
+    const AleTolerances tol;
 
+    // true if value is outside the open interval (target - tolerance, target + tolerance)
+    [[nodiscard]] static constexpr bool isOutsideBand(float value, float target, float tolerance) noexcept 
+    {
+        return (value <= (target - tolerance)) || (value >= (target + tolerance));
+    }
 
     // Rounding function to half-integer number
-    float roundHalfDayNg(float nToRound) {
-        if( nToRound <= 1.0f )  return 1.0f;
-        return roundf(nToRound *2.0f) /2.0f;
+    [[nodiscard]] static float roundHalfDayNg(float nToRound) noexcept 
+    {
+        if (nToRound <= 1.0f) return 1.0f;
+        return std::round(nToRound * 2.0f) / 2.0f;
     }
 
 
-    void AlgorithmElaboration() {
-        this->approxDays = this->roundHalfDayNg(this->nd);
+    void algorithmElaboration() 
+    {
+        approxDays = roundHalfDayNg(nd);
         // Manage non integer number of days
-        const int int_part_apprDays = static_cast< float >(static_cast< int >( this->approxDays ));
+        const int intPartApproxDays = static_cast<int>(approxDays);
 
-        // In case of nd as non-integer number
-        if ( (this->approxDays - int_part_apprDays) > 0.1f ) {
-            int N;
-            this->onlyIntegerDays = false;
-            N = 2 * static_cast< int >(int_part_apprDays) + 1;
-            this->d.reserve(N);
-            this->pd.reserve(N);
-            this->pdap.reserve(N);
-            this->ParametersComputation(N);
-        }
-            // In case nd as an integer number
-        else {
-            this->d.reserve(static_cast< int >(this->approxDays));
-            this->pd.reserve(static_cast< int >(this->approxDays));
-            this->pdap.reserve(static_cast< int >(this->approxDays));
-            this->ParametersComputation(static_cast< int >(this->approxDays));
-        }
+        // Handling the case in which nd is a non-integer number
+        onlyIntegerDays = !((approxDays - static_cast<float>(intPartApproxDays)) > 0.1f);
+        const int N = onlyIntegerDays ? intPartApproxDays : (2 * intPartApproxDays + 1);
+        const auto size = static_cast<std::size_t>(N);
+        d.reserve(size);
+        pd.reserve(size);
+        pdap.reserve(size);
+        parametersComputation(N);
     }
+
 
     // FUNCTIONS TO COMPUTE THE ALGORITHM RESULTS
 
     // Computation m and q parameters function
-    void ParametersComputation(int N) {
-
+    void parametersComputation(int N) 
+    {
         // q and m parameters definition
-        this->q = this->np * 2.0f * this->rp / ( static_cast<float>(N) *  (this->rp + 1.0f) );
-        this->m = this->q * (this->rp - 1.0f) / (this->rp * static_cast<float>(N - 1) );
+        q = np * 2.0f * rp / (static_cast<float>(N) * (rp + 1.0f));
+        m = q * (rp - 1.0f) / (rp * static_cast<float>(N - 1));
         // Algorithm results computation
-        this->ResultsComputation(N);
+        resultsComputation(N);
 
         // self-correction phases in case of sensibility not satisfied
-        int counter = 0;
-        while( ( (ErrorOrWarning == "ERROR") || (this->wrong_rate ) ) && (counter < this->maxErrIter) ){
+        for (int iter = 0; iter < tol.maxErrIter && ((status == Status::Error) || wrong_rate); ++iter) {
             // Rescale m to P and adjust q
-            this->m = this->m * (this->np / this->totExactPhases);
-            this->q = (this->np + this->m * (static_cast<float>(N * (N - 1)) / 2.0f)) / static_cast<float>(N);
-            if (this->q != (this->m * static_cast<float>(N - 1))) {
-                float R_check = this->q / (this->q - this->m * static_cast<float>(N - 1));
-                // if the correction drifts the R value from desired one more than 2 * sensRate the correction is stopped
-                if (((R_check <= (this->rp - 2 * this->sensRate)) ||
-                     (R_check >= (this->rp + 2 * this->sensRate)) ||
-                     (this->q < this->m * static_cast<float>(N - 1)))) {
-                    counter = 10;
-                } else {
-                    this->d.clear();
-                    this->pd.clear();
-                    this->pdap.clear();
-                    this->ErrorOrWarning = " ";
-                    this->ResultsComputation(N);
-                    counter++;
-                }
-            } else {
-                counter = 10;
-            }
-        }
+            m = m * (np / totExactPhases);
+            q = (np + m * (static_cast<float>(N) * static_cast<float>(N - 1) / 2.0f)) / static_cast<float>(N);
 
+            const float mSpan = m * static_cast<float>(N - 1);
+            if (q == mSpan) break;
+            const float R_check = q / (q - mSpan);
+            // if the correction drifts the R value from desired one, more than 2 * sensRate, the correction is stopped
+            if (isOutsideBand(R_check, rp, 2.0f * tol.sensRate) || (q < mSpan)) break;
+
+            resultsComputation(N);
+        }
     }
 
 
     // Results computation function
-    void ResultsComputation(int N) {
-        float each_day_value;
+    void resultsComputation(int N) 
+    {
+        d.assign(static_cast<std::size_t>(N), 0);
+        std::iota(d.begin(), d.end(), 1);
+        pd.clear();
+        pdap.clear();
+        status = Status::Ok;
+
         // iterations
-        for (int i = 0; i < N; i++) {
-            each_day_value = this->q - static_cast<float>(i)* this->m;
-            this->d.push_back( i + 1 );
-            this->pd.push_back( each_day_value );
-            this->pdap.push_back( roundf(each_day_value / sensApproxSinglePhase) * sensApproxSinglePhase);
+        float each_day_value = 0;
+        for (int i = 0; i < N; ++i) {
+            each_day_value = q - static_cast<float>(i) * m;
+            pd.push_back(each_day_value);
+            pdap.push_back(std::round(each_day_value / tol.sensApproxSinglePhase) * tol.sensApproxSinglePhase);
         }
 
         // Final checks of computed values near enough to desired values
         // exact phases
-        this->totExactPhases = accumulate(this->pd.begin(), this->pd.end(), 0.0f);
-        if ((this->totExactPhases <= (this->np - this->sensExactPhases)) || (this->totExactPhases >= (this->np + this->sensExactPhases))) {
-            this->ErrorOrWarning = "ERROR";
+        totExactPhases = std::accumulate(pd.begin(), pd.end(), 0.0f);
+        if (isOutsideBand(totExactPhases, np, tol.sensExactPhases)) {
+            status = Status::Error;
         } else {
             // approximated phases
-            this->totApproxPhases = accumulate(this->pdap.begin(), this->pdap.end(), 0.0f);
-            if ((this->totApproxPhases <= (this->np - this->sensApproxTotPhases)) || (this->totApproxPhases >= (this->np + this->sensApproxTotPhases))) {
-                this->ErrorOrWarning = "WARNING";
+            totApproxPhases = std::accumulate(pdap.begin(), pdap.end(), 0.0f);
+            if (isOutsideBand(totApproxPhases, np, tol.sensApproxTotPhases)) {
+                status = Status::Warning;
             }
         }
         // rate between first and last day value
-        this->rate_first_last = this->pd.at(0) /  this->pd.at(this->d.size() - 1);
-        this->wrong_rate = ( (this->rate_first_last <= (this->rp - this->sensRate)) || (this->rate_first_last >= (this->rp + this->sensRate)) );
+        rate_first_last = pd.front() / pd.back();
+        wrong_rate = isOutsideBand(rate_first_last, rp, tol.sensRate);
     }
-
-    /*
-    float approxPhasesComputation(float r){
-        // generalization of approximation computation
-
-        // a general solution to manage more cases, but computational heavier
-        for( float j = 0.0f ; j <= 1.0f; j += (1.0f / this->approxDiv) ){
-            if (j == 0.0f){
-                if ( r < (j/2.0f) ){ r = 0.0f; }
-            }
-            else if (j == 1.0f){
-                if ( r >= (1.0f - (j/2.0f)) ){ r = 1.0f; }
-            }
-            else{
-                if ( (r >= (j/2.0f) ) && (r < (j + (j/2.0f)) )) { r = j; }
-            }
-        }
-
-        return outR;
-    }
-    */
 
 };
 

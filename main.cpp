@@ -16,53 +16,71 @@
 *
 */
 
-
 #include "AlwaysLessEffort.h"
 #include "TextCreator.h"
 
-#include <iostream>
 #include <fstream>
+#include <iostream>
+#include <locale>
+#include <sstream>
 
-using namespace std;
 
-int main(){
+namespace
+{
+    // function to handle the number formatting for output files' name
+    std::string numberForFileName(float value)
+    {
+        std::ostringstream out;
+        out.imbue(std::locale::classic());   // always '.'
+        out << value;
+        return out.str();
+    }
+}
+
+
+int main()
+{
     // computation parameters
-    float nPhases = 267.5;
-    float nDays = 12.7;
-    float desiredRate = 45;
+    const float nPhases = 267.5f;
+    const float nDays = 12.7f;
+    const float desiredRate = 45.0f;
     // that means 45% more of work done on first day compared to the last day
     // that will be transformed inside AlwaysLessEffort to the rate of 1.45
-
+    
     //output text language
     // it can accept only "en" or "it"
-    string language = "en";
+    const std::string language = "en";
 
     // Compute all algorithm variables
-    AlwaysLessEffort ALE {nDays,nPhases, desiredRate};
-    // Obtain output variables: ALE.d; ALE.pd; ALE.pdap;...
+    // (optional: the tolerance and convergence values can be customized, e.g.
+    //    AleTolerances tolerances;  tolerances.maxErrIter = 3;
+    //    const AlwaysLessEffort ale { nDays, nPhases, desiredRate, tolerances }; )
+    const AlwaysLessEffort ale { nDays, nPhases, desiredRate };
+
+    // Obtain output variables: ale.d; ale.pd; ale.pdap;...
+
+    // Error situation (invalid or particular input values)
+    if (ale.status == AlwaysLessEffort::Status::Error) {
+        std::cerr << " Please change the input values of the algorithm!\n";
+        return 1;
+    }
 
     // In case of standard non error situation, the output file text can be created
-    if (ALE.ErrorOrWarning != "ERROR") {
+    const TextCreator outText { ale, language };
 
-        TextCreator outText {ALE, language};
-        string outputStreamText = outText.TextToWriteInFile;
+    const std::string fileName = "SCHEDULE_i" + numberForFileName(desiredRate) + "_p" + numberForFileName(nPhases) + "_d" + numberForFileName(nDays) + "_" + language + ".txt";
 
-        ofstream outputFile;
-        string textRp = to_string(desiredRate).substr(0, 4).erase(to_string(desiredRate).find('.'),1);
-        // in this way the file name has also decimal digits of input days, even if the considered days are approximated
-        string textPhases = to_string(nPhases).substr(0, 6).erase(to_string(nPhases).find('.'),1);
-        string textDays = to_string(nDays).substr(0, 4).erase(to_string(nDays).find('.'),1);
-        outputFile.open("SCHEDULE_i"+ textRp + "_p"+ textPhases + "_d"+ textDays+ "_"+ language +".txt", ios::out | ios::trunc);
-        if (outputFile.is_open()){
-            outputFile << outputStreamText;
-            outputFile.close();
-        }else{
-            cout << "Error in opening file : please check permissions.";
-        }
-
-        // rare case of error situation on total phases
-    }else{
-        cout<<" Please change the input values of the algorithm!\"";
+    std::ofstream outputFile { fileName };
+    if (!outputFile.is_open()) {
+        std::cerr << "Error in opening file : please check permissions.\n";
+        return 1;
+    }
+    outputFile << outText.TextToWriteInFile;
+    // close explicitly to be sure that the whole text has been written
+    outputFile.close();
+    if (outputFile.fail()) {
+        std::cerr << "Error in writing file : please check free space and permissions.\n";
+        return 1;
     }
 
     return 0;
