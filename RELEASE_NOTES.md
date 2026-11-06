@@ -2,11 +2,11 @@
 
 Copyright 2026 Samuel Bresciani bresciani.app@gmail.com
 
-## Version 2.1.1
+## Version 2.1.2
 **Release Date:** 2026-11-06
 
 ### Features
-- Tests libraries minor fix
+- Automated tests minor fixes
 
 ## Version 2.1
 **Release Date:** 2026-11-06
