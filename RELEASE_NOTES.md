@@ -2,12 +2,18 @@
 
 Copyright 2026 Samuel Bresciani bresciani.app@gmail.com
 
+## Version 2.1.1
+**Release Date:** 2026-11-06
+
+### Features
+- Tests libraries minor fix
+
 ## Version 2.1
 **Release Date:** 2026-11-06
 
 ### Features
 - Python version added
-- automated tests inserted
+- Automated tests inserted
 - C++ days approximation code improved
 - README with Python usage explained too
 
