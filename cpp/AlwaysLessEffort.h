@@ -63,19 +63,19 @@ class AlwaysLessEffort
 public:
     // input variables Days, Phases and Increase Percentage/Rate
     const float nd, np, rp;
+    // generic ok-error-warning status     
+    enum class Status { Ok, Warning, Error };
+    Status status = Status::Ok;
+    // to distinguish the two cases of nd as integer or not
+    bool onlyIntegerDays = true;
+    float approxDays = 0.0f;
     // other computation variables
     float rate_first_last = 0.0f;
     float totApproxPhases = 0.0f;
     float totExactPhases = 0.0f;
-    float approxDays = 0.0f;
     std::vector<int> d;
     std::vector<float> pd, pdap;
-    // to distinguish the two cases of nd as integer or not
-    bool onlyIntegerDays = true;
     bool wrong_rate = false;
-    // generic ok-error-warning status     
-    enum class Status { Ok, Warning, Error };
-    Status status = Status::Ok;
 
 
     AlwaysLessEffort(float nDays_in, float nPhases_in, float desiredRate_in, AleTolerances tolerances = {})
@@ -126,23 +126,16 @@ private:
         return (value <= (target - tolerance)) || (value >= (target + tolerance));
     }
 
-    // Rounding function to half-integer number
-    [[nodiscard]] static float roundHalfDayNg(float nToRound) noexcept 
-    {
-        if (nToRound <= 1.0f) return 1.0f;
-        return std::round(nToRound * 2.0f) / 2.0f;
-    }
-
 
     void algorithmElaboration() 
     {
-        approxDays = roundHalfDayNg(nd);
-        // Manage non integer number of days
-        const int intPartApproxDays = static_cast<int>(approxDays);
+        // nd is rounded to the nearest half day: halfDays is the number of half days
+        // (nd >= 1.25 is guaranteed by the constructor, so halfDays >= 3)
+        const int halfDays = static_cast<int>(std::lround(nd * 2.0f));
+        approxDays = static_cast<float>(halfDays) / 2.0f;
+        onlyIntegerDays = (halfDays % 2) == 0;
+        const int N = onlyIntegerDays ? (halfDays / 2) : halfDays;
 
-        // Handling the case in which nd is a non-integer number
-        onlyIntegerDays = !((approxDays - static_cast<float>(intPartApproxDays)) > 0.1f);
-        const int N = onlyIntegerDays ? intPartApproxDays : (2 * intPartApproxDays + 1);
         const auto size = static_cast<std::size_t>(N);
         d.reserve(size);
         pd.reserve(size);

@@ -1,4 +1,9 @@
 # Always-Less-Effort
+
+![tests](https://github.com/BrescianiS/AlwaysLessEffort_method/actions/workflows/tests.yml/badge.svg)
+
+[![License](https://img.shields.io/github/license/BrescianiS/AlwaysLessEffort_method)](LICENSE)
+
 Always Less Effort (ALE) is a scheduling algorithm that distributes a fixed workload before a given deadline so that each day requires less work than the previous one, while still guaranteeing completion of the total workload. The ratio between the first-day and last-day workloads is user-defined, and the daily workload distribution is obtained in a single computation through a closed-form analytical solution.
 
 Copyright 2026 Samuel Bresciani bresciani.app@gmail.com
@@ -89,8 +94,8 @@ You have to consider that, in every situation, reducing the workload (or study) 
 workload (or study material); and this aspect can be managed thanks to the designated parameter representing the ratio between the workload (or study) of the first day compared to the last day.
 
 ## How to use
-The scripts are written in C++17.  
-It is sufficient to execute the _main_ function to obtain an example of the potential usage of the algorithm.
+The scripts are written in C++17 and Python3.  
+It is sufficient to execute the cpp _main_ function or the _run.py_, to obtain an example of the potential usage of the algorithm.
 
 The algorithm parameters refer to the case where we consider the number of phases of a production process as the concept of overall workload, but it can obviously be directly used for any area
 of application required, simply by quantifying the overall workload through the parameter _nPhases_.
@@ -107,14 +112,25 @@ The optimal value of the rate parameter _desiredRate_ can be deduced as illustra
 Additional input parameters can be set for the precision of the algorithm in checking how close the computed values are to the analytical solution, as well as for the rounding of written
 output text values. These out-of-precision cases are very rare situations, but their self-correction has been included for completeness (their functionality is illustrated in the [Self-correction procedure](https://github.com/BrescianiS/AlwaysLessEffort_method#self-correction-procedure) section).
 
-The repository consists of two libraries:
-- **_AlwaysLessEffort_**: elaborating the actual algorithm on which the method is based
-- **_TextCreator_**: generating the output text content with all information regarding the achieved results
+### C++ version code
+Due to the logic of the common use cases, the C++ code uses float (32-bit) variables.
 
-Both are called in the _main_ function as a practical example.  
+The C++ code consists of two libraries and an example script:
+- **_AlwaysLessEffort.h_**: elaborating the actual algorithm on which the method is based
+- **_TextCreator.h_**: generating the output text content with all information regarding the achieved results
+- **_main.cpp_**: an example script that call them
+
 The output values of _AlwaysLessEffort_ comprise all the computed values of the algorithm and any potential warnings.
 The _TextCreator_ class takes an AlwaysLessEffort class variable and additional output rounding parameters as input, and then it generates the string for the content of the output text file.  
 An [example of the final text file](https://github.com/BrescianiS/AlwaysLessEffort_method/blob/main/SCHEDULE_i450_p26750_d127_en.txt) resulting from the overall elaboration is included in the repository files. 
+
+### Python version code
+The Python code uses the standard float type variables (64-bit double precision).
+
+The Python version consists of three files:
+- **_AlwaysLessEffort.py_**: the computational module, with the same input parameters explained above;
+- **_run.py_**: an example script that calls it, run with _python run.py_;
+- **_test_ale.py_**: automated tests, run with _pytest_.
 
 
 ## Analytical logic

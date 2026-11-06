@@ -2,6 +2,15 @@
 
 Copyright 2026 Samuel Bresciani bresciani.app@gmail.com
 
+## Version 2.1
+**Release Date:** 2026-11-06
+
+### Features
+- Python version added
+- automated tests inserted
+- C++ days approximation code improved
+- README with Python usage explained too
+
 ## Version 2.0
 **Release Date:** 2026-10-26
 
@@ -70,9 +79,6 @@ Copyright 2026 Samuel Bresciani bresciani.app@gmail.com
 - C++ main script to generate an output text file through other two libraries
 
 
-### Future implementations
-- Python version scripts
 
-
-### Contributor
+## Contributor
 - Samuel Bresciani  bresciani.app@gmail.com

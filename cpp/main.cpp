@@ -41,8 +41,8 @@ namespace
 int main()
 {
     // computation parameters
-    const float nPhases = 267.5f;
     const float nDays = 12.7f;
+    const float nPhases = 267.5f;
     const float desiredRate = 45.0f;
     // that means 45% more of work done on first day compared to the last day
     // that will be transformed inside AlwaysLessEffort to the rate of 1.45
@@ -53,7 +53,8 @@ int main()
 
     // Compute all algorithm variables
     // (optional: the tolerance and convergence values can be customized, e.g.
-    //    AleTolerances tolerances;  tolerances.maxErrIter = 3;
+    //    AleTolerances tolerances;  
+    //    tolerances.maxErrIter = 3;
     //    const AlwaysLessEffort ale { nDays, nPhases, desiredRate, tolerances }; )
     const AlwaysLessEffort ale { nDays, nPhases, desiredRate };
 
