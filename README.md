@@ -1,6 +1,6 @@
 # Always-Less-Effort
 
-![tests](https://github.com/BrescianiS/AlwaysLessEffort_method/actions/workflows/tests.yml/badge.svg)
+![tests](https://github.com/BrescianiS/AlwaysLessEffort_method/actions/workflows/tests.yaml/badge.svg)
 
 [![License](https://img.shields.io/github/license/BrescianiS/AlwaysLessEffort_method)](LICENSE)
 

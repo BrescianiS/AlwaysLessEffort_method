@@ -2,7 +2,7 @@
 
 Copyright 2026 Samuel Bresciani bresciani.app@gmail.com
 
-## Version 2.1.2
+## Version 2.1.3
 **Release Date:** 2026-11-06
 
 ### Features
